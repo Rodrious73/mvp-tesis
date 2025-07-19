@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Administrador - Sistema de Tesis UNJFSC{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Panel de Administración</h1>
+        <p class="text-muted mb-0">
+            <i class="fas fa-shield-alt me-1"></i>
+            Gestión del Sistema de Tesis - UNJFSC
+        </p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('admin.broadcast_notification') }}" class="btn btn-info">
+            <i class="fas fa-bullhorn me-2"></i>Enviar Notificación
+        </a>
+        <a href="{{ url_for('admin.statistics') }}" class="btn btn-primary">
+            <i class="fas fa-chart-bar me-2"></i>Estadísticas Detalladas
+        </a>
+    </div>
+</div>
+
+<!-- Métricas principales -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="card-title">{{ total_users }}</h3>
+                        <p class="card-text mb-0">Total Usuarios</p>
+                    </div>
+                    <i class="fas fa-users fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="card-title">{{ thesis_stats.total }}</h3>
+                        <p class="card-text mb-0">Total Tesis</p>
+                    </div>
+                    <i class="fas fa-book fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="card-title">{{ total_students }}</h3>
+                        <p class="card-text mb-0">Estudiantes</p>
+                    </div>
+                    <i class="fas fa-graduation-cap fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="card-title">{{ total_teachers }}</h3>
+                        <p class="card-text mb-0">Docentes</p>
+                    </div>
+                    <i class="fas fa-chalkboard-teacher fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Gráfico de estados de tesis -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>
+                    Estados de Tesis
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="thesisStatusChart" width="400" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Almacenamiento -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-hdd me-2"></i>
+                    Almacenamiento
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="h4 text-primary">{{ storage_stats.total_documents }}</div>
+                        <small class="text-muted">Documentos</small>
+                    </div>
+                    <div class="col-6">
+                        <div class="h4 text-success">{{ storage_stats.total_size_mb }} MB</div>
+                        <small class="text-muted">Espacio Usado</small>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h6 class="mb-3">Por Tipo de Documento:</h6>
+                {% for doc_type, stats in storage_stats.by_type.items() %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small">{{ doc_type|title }}:</span>
+                    <span class="small text-muted">{{ stats.count }} files ({{ stats.size_mb }} MB)</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Tesis recientes -->
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-clock me-2"></i>
+                    Tesis Recientes para Revisión
+                </h5>
+                <a href="{{ url_for('admin.thesis_list') }}" class="btn btn-sm btn-outline-primary">
+                    Ver todas
+                </a>
+            </div>
+            <div class="card-body">
+                {% if recent_thesis %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Estudiante</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for thesis in recent_thesis %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-book text-primary me-2"></i>
+                                        <div>
+                                            <div class="fw-bold">{{ thesis.title[:50] }}{% if thesis.title|length > 50 %}...{% endif %}</div>
+                                            <small class="text-muted">{{ thesis.career }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div>{{ thesis.student.full_name }}</div>
+                                        <small class="text-muted">{{ thesis.student.student_code }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ thesis.get_status_color() }}">
+                                        {{ thesis.get_status_display() }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <small>{{ thesis.submitted_at.strftime('%d/%m/%Y') if thesis.submitted_at else thesis.created_at.strftime('%d/%m/%Y') }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('admin.thesis_detail', thesis_id=thesis.id) }}" 
+                                           class="btn btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-inbox fa-3x mb-3"></i>
+                    <p>No hay tesis pendientes de revisión</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Enlaces rápidos -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-bolt me-2"></i>
+                    Acciones Rápidas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('admin.users_list') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-users me-2"></i>
+                        Gestionar Usuarios
+                    </a>
+                    
+                    <a href="{{ url_for('admin.thesis_list') }}" class="btn btn-outline-success">
+                        <i class="fas fa-book me-2"></i>
+                        Ver Todas las Tesis
+                    </a>
+                    
+                    <a href="{{ url_for('admin.statistics') }}" class="btn btn-outline-info">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Estadísticas Detalladas
+                    </a>
+                    
+                    <a href="{{ url_for('admin.broadcast_notification') }}" class="btn btn-outline-warning">
+                        <i class="fas fa-bullhorn me-2"></i>
+                        Enviar Notificación Masiva
+                    </a>
+                </div>
+                
+                <hr>
+                
+                <h6 class="mb-3">Filtros Rápidos de Tesis:</h6>
+                <div class="d-grid gap-1">
+                    <a href="{{ url_for('admin.thesis_list', status='submitted') }}" 
+                       class="btn btn-sm btn-outline-secondary">
+                        Presentadas ({{ thesis_stats.by_status.get('submitted', 0) }})
+                    </a>
+                    <a href="{{ url_for('admin.thesis_list', status='under_review') }}" 
+                       class="btn btn-sm btn-outline-secondary">
+                        En Revisión ({{ thesis_stats.by_status.get('under_review', 0) }})
+                    </a>
+                    <a href="{{ url_for('admin.thesis_list', status='approved') }}" 
+                       class="btn btn-sm btn-outline-secondary">
+                        Aprobadas ({{ thesis_stats.by_status.get('approved', 0) }})
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Gráfico de estados de tesis
+const ctx = document.getElementById('thesisStatusChart').getContext('2d');
+const statusData = {{ thesis_stats.by_status | tojson }};
+
+const statusLabels = {
+    'draft': 'Borrador',
+    'submitted': 'Presentada',
+    'under_review': 'En Revisión',
+    'approved': 'Aprobada',
+    'rejected': 'Rechazada',
+    'revision_required': 'Requiere Revisión',
+    'completed': 'Completada'
+};
+
+const statusColors = {
+    'draft': '#6c757d',
+    'submitted': '#17a2b8',
+    'under_review': '#ffc107',
+    'approved': '#28a745',
+    'rejected': '#dc3545',
+    'revision_required': '#fd7e14',
+    'completed': '#007bff'
+};
+
+const labels = Object.keys(statusData).map(key => statusLabels[key] || key);
+const data = Object.values(statusData);
+const colors = Object.keys(statusData).map(key => statusColors[key] || '#6c757d');
+
+new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: labels,
+        datasets: [{
+            data: data,
+            backgroundColor: colors,
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

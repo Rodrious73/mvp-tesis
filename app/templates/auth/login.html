@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar Sesión - Sistema de Tesis UNJFSC{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card">
+            <div class="card-header bg-primary text-white text-center">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-sign-in-alt me-2"></i>
+                    Iniciar Sesión
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">
+                            <i class="fas fa-envelope me-1"></i>
+                            Correo Electrónico
+                        </label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               required placeholder="tu@email.com">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">
+                            <i class="fas fa-lock me-1"></i>
+                            Contraseña
+                        </label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="password" 
+                                   name="password" required placeholder="Tu contraseña">
+                            <button class="btn btn-outline-secondary" type="button" 
+                                    id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                        <label class="form-check-label" for="remember">
+                            Recordarme
+                        </label>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            Iniciar Sesión
+                        </button>
+                    </div>
+                </form>
+                
+                <hr class="my-4">
+                
+                <div class="text-center">
+                    <p class="mb-2">
+                        ¿No tienes una cuenta? 
+                        <a href="{{ url_for('auth.register') }}" class="text-decoration-none">
+                            Regístrate aquí
+                        </a>
+                    </p>
+                    <p class="mb-0">
+                        ¿Olvidaste tu contraseña? 
+                        <a href="{{ url_for('auth.forgot_password') }}" class="text-decoration-none">
+                            Recupérala aquí
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Información de usuarios de prueba -->
+        <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Usuarios de Prueba
+                </h6>
+            </div>
+            <div class="card-body">
+                <small class="text-muted">Puedes usar estos usuarios para probar el sistema:</small>
+                
+                <div class="mt-3">
+                    <strong>Administrador:</strong><br>
+                    <code>admin@unjfsc.edu.pe</code> / <code>admin123</code>
+                </div>
+                
+                <div class="mt-2">
+                    <strong>Docente:</strong><br>
+                    <code>docente@unjfsc.edu.pe</code> / <code>docente123</code>
+                </div>
+                
+                <div class="mt-2">
+                    <strong>Estudiante:</strong><br>
+                    <code>estudiante@unjfsc.edu.pe</code> / <code>estudiante123</code>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Alternar visibilidad de contraseña
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const passwordField = document.getElementById('password');
+        const toggleIcon = this.querySelector('i');
+        
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    });
+</script>
+{% endblock %}

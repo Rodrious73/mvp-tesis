@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Acerca de - Sistema de Tesis UNJFSC{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="text-center mb-5">
+                <h1 class="display-4 mb-3">Acerca del Sistema</h1>
+                <p class="lead text-muted">
+                    Sistema de Gestión de Tesis Digital para la Universidad Nacional José Faustino Sánchez Carrión
+                </p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-bullseye text-primary me-2"></i>
+                                Objetivo
+                            </h5>
+                            <p class="card-text">
+                                Digitalizar y optimizar el proceso de gestión de tesis universitarias, 
+                                facilitando la colaboración entre estudiantes, docentes y administradores 
+                                de la UNJFSC.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-lightbulb text-warning me-2"></i>
+                                Visión
+                            </h5>
+                            <p class="card-text">
+                                Ser la plataforma integral de referencia para la gestión académica 
+                                de tesis, promoviendo la eficiencia, transparencia y calidad en 
+                                el proceso educativo superior.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-cogs text-info me-2"></i>
+                        Características Técnicas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Frontend</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fab fa-html5 text-danger me-2"></i>HTML5</li>
+                                <li><i class="fab fa-css3-alt text-primary me-2"></i>CSS3 + Bootstrap 5</li>
+                                <li><i class="fab fa-js text-warning me-2"></i>JavaScript</li>
+                                <li><i class="fas fa-mobile-alt text-success me-2"></i>Diseño Responsivo</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Backend</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fab fa-python text-primary me-2"></i>Python 3.8+</li>
+                                <li><i class="fas fa-flask text-secondary me-2"></i>Flask Framework</li>
+                                <li><i class="fas fa-database text-info me-2"></i>SQLite Database</li>
+                                <li><i class="fas fa-shield-alt text-success me-2"></i>JWT Authentication</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-users text-success me-2"></i>
+                        Roles del Sistema
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-graduation-cap fa-3x text-primary mb-3"></i>
+                                <h6>Estudiante</h6>
+                                <ul class="list-unstyled small">
+                                    <li>Registrar propuesta de tesis</li>
+                                    <li>Subir documentos</li>
+                                    <li>Ver estado y comentarios</li>
+                                    <li>Recibir notificaciones</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-chalkboard-teacher fa-3x text-success mb-3"></i>
+                                <h6>Docente</h6>
+                                <ul class="list-unstyled small">
+                                    <li>Revisar tesis asignadas</li>
+                                    <li>Aprobar/rechazar tesis</li>
+                                    <li>Agregar comentarios</li>
+                                    <li>Calificar trabajos</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-user-cog fa-3x text-warning mb-3"></i>
+                                <h6>Administrador</h6>
+                                <ul class="list-unstyled small">
+                                    <li>Gestionar usuarios</li>
+                                    <li>Asignar asesores/jurados</li>
+                                    <li>Ver estadísticas</li>
+                                    <li>Configurar sistema</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-university text-primary me-2"></i>
+                        Universidad Nacional José Faustino Sánchez Carrión
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        La Universidad Nacional José Faustino Sánchez Carrión (UNJFSC) es una institución 
+                        de educación superior pública del Perú, comprometida con la formación integral de 
+                        profesionales competentes y la generación de conocimiento a través de la investigación.
+                    </p>
+                    
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="h5 text-primary">{{ 'Fundada en 1960' }}</div>
+                            <small class="text-muted">Años de tradición</small>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="h5 text-success">{{ '12+' }}</div>
+                            <small class="text-muted">Facultades</small>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="h5 text-info">{{ '40+' }}</div>
+                            <small class="text-muted">Carreras profesionales</small>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="h5 text-warning">{{ '15,000+' }}</div>
+                            <small class="text-muted">Estudiantes</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

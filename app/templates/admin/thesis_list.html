@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Tesis - Administración{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>
+                    <i class="fas fa-book me-2"></i>
+                    Gestión de Tesis
+                </h1>
+                
+                <!-- Filtros -->
+                <div class="d-flex gap-2">
+                    <form method="GET" class="d-flex gap-2">
+                        <select name="status" class="form-select" onchange="this.form.submit()">
+                            <option value="">Todos los estados</option>
+                            <option value="draft" {{ 'selected' if status_filter == 'draft' }}>Borrador</option>
+                            <option value="submitted" {{ 'selected' if status_filter == 'submitted' }}>Presentada</option>
+                            <option value="under_review" {{ 'selected' if status_filter == 'under_review' }}>En Revisión</option>
+                            <option value="approved" {{ 'selected' if status_filter == 'approved' }}>Aprobada</option>
+                            <option value="rejected" {{ 'selected' if status_filter == 'rejected' }}>Rechazada</option>
+                            <option value="revision_required" {{ 'selected' if status_filter == 'revision_required' }}>Requiere Revisión</option>
+                        </select>
+                        
+                        <select name="career" class="form-select" onchange="this.form.submit()">
+                            <option value="">Todas las carreras</option>
+                            {% for career in careers %}
+                                <option value="{{ career }}" {{ 'selected' if career_filter == career }}>{{ career }}</option>
+                            {% endfor %}
+                        </select>
+                        
+                        <input type="text" name="search" class="form-control" 
+                               placeholder="Buscar por título..." value="{{ search_query }}">
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Estadísticas rápidas -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-white bg-primary">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4>{{ thesis_list|length }}</h4>
+                                    <p class="mb-0">Total</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-book fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card text-white bg-warning">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4>{{ thesis_list|selectattr('status', 'equalto', 'submitted')|list|length }}</h4>
+                                    <p class="mb-0">Pendientes</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-clock fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card text-white bg-info">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4>{{ thesis_list|selectattr('status', 'equalto', 'under_review')|list|length }}</h4>
+                                    <p class="mb-0">En Revisión</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-search fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card text-white bg-success">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4>{{ thesis_list|selectattr('status', 'equalto', 'approved')|list|length }}</h4>
+                                    <p class="mb-0">Aprobadas</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-check fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lista de tesis -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Lista de Tesis
+                        {% if status_filter or career_filter or search_query %}
+                            <small class="text-muted">(Filtrado)</small>
+                        {% endif %}
+                    </h5>
+                </div>
+                
+                <div class="card-body p-0">
+                    {% if thesis_list %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Título</th>
+                                        <th>Estudiante</th>
+                                        <th>Carrera</th>
+                                        <th>Estado</th>
+                                        <th>Asesor</th>
+                                        <th>Jurado</th>
+                                        <th>Fecha</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for thesis in thesis_list %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ thesis.title[:50] }}{% if thesis.title|length > 50 %}...{% endif %}</strong>
+                                            {% if thesis.research_line %}
+                                                <br><small class="text-muted">{{ thesis.research_line }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-user-graduate me-2"></i>
+                                                <div>
+                                                    {{ thesis.student.full_name }}
+                                                    {% if thesis.student.student_code %}
+                                                        <br><small class="text-muted">{{ thesis.student.student_code }}</small>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{ thesis.career }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ thesis.get_status_color() }}">
+                                                {{ thesis.get_status_display() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if thesis.advisor %}
+                                                <i class="fas fa-chalkboard-teacher me-1"></i>
+                                                {{ thesis.advisor.full_name }}
+                                            {% else %}
+                                                <span class="text-muted">
+                                                    <i class="fas fa-user-plus me-1"></i>
+                                                    Sin asignar
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if thesis.jury %}
+                                                <i class="fas fa-gavel me-1"></i>
+                                                {{ thesis.jury.full_name }}
+                                            {% else %}
+                                                <span class="text-muted">
+                                                    <i class="fas fa-user-plus me-1"></i>
+                                                    Sin asignar
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <small>{{ thesis.created_at.strftime('%d/%m/%Y') }}</small>
+                                            {% if thesis.submitted_at %}
+                                                <br><small class="text-muted">Env: {{ thesis.submitted_at.strftime('%d/%m/%Y') }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ url_for('admin.thesis_detail', thesis_id=thesis.id) }}" 
+                                                   class="btn btn-sm btn-outline-primary" title="Ver detalles">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                
+                                                {% if not thesis.advisor %}
+                                                    <button type="button" class="btn btn-sm btn-outline-success" 
+                                                            title="Asignar asesor" 
+                                                            onclick="showAssignModal({{ thesis.id }}, 'advisor', '{{ thesis.title }}')">
+                                                        <i class="fas fa-user-plus"></i>
+                                                    </button>
+                                                {% endif %}
+                                                
+                                                {% if not thesis.jury %}
+                                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                                            title="Asignar jurado"
+                                                            onclick="showAssignModal({{ thesis.id }}, 'jury', '{{ thesis.title }}')">
+                                                        <i class="fas fa-gavel"></i>
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No se encontraron tesis</h5>
+                            <p class="text-muted">
+                                {% if status_filter or career_filter or search_query %}
+                                    Prueba cambiando los filtros de búsqueda.
+                                {% else %}
+                                    Los estudiantes aún no han registrado propuestas de tesis.
+                                {% endif %}
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para asignar asesor/jurado -->
+<div class="modal fade" id="assignModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignModalTitle">Asignar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            
+            <form id="assignForm" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="thesisTitle" class="form-label">Tesis:</label>
+                        <input type="text" class="form-control" id="thesisTitle" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="teacherSelect" class="form-label" id="teacherSelectLabel">Seleccionar:</label>
+                        <select class="form-select" id="teacherSelect" name="teacher_id" required>
+                            <option value="">Cargando...</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Asignar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let assignModal;
+let currentThesisId;
+let currentAssignType;
+
+document.addEventListener('DOMContentLoaded', function() {
+    assignModal = new bootstrap.Modal(document.getElementById('assignModal'));
+});
+
+function showAssignModal(thesisId, type, thesisTitle) {
+    currentThesisId = thesisId;
+    currentAssignType = type;
+    
+    // Actualizar el título del modal y el formulario
+    const title = type === 'advisor' ? 'Asignar Asesor' : 'Asignar Jurado';
+    const label = type === 'advisor' ? 'Asesor:' : 'Jurado:';
+    
+    document.getElementById('assignModalTitle').textContent = title;
+    document.getElementById('teacherSelectLabel').textContent = label;
+    document.getElementById('thesisTitle').value = thesisTitle;
+    
+    // Configurar la acción del formulario
+    const form = document.getElementById('assignForm');
+    form.action = `/admin/thesis/${thesisId}/assign-${type}`;
+    form.querySelector('select[name="teacher_id"]').name = `${type}_id`;
+    
+    // Cargar docentes
+    loadTeachers();
+    
+    assignModal.show();
+}
+
+function loadTeachers() {
+    const select = document.getElementById('teacherSelect');
+    select.innerHTML = '<option value="">Cargando...</option>';
+    
+    fetch('/admin/api/teachers')
+        .then(response => response.json())
+        .then(teachers => {
+            select.innerHTML = '<option value="">Selecciona un docente</option>';
+            
+            teachers.forEach(teacher => {
+                const option = document.createElement('option');
+                option.value = teacher.id;
+                option.textContent = `${teacher.name}`;
+                if (teacher.department) {
+                    option.textContent += ` - ${teacher.department}`;
+                }
+                select.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error cargando docentes:', error);
+            select.innerHTML = '<option value="">Error cargando docentes</option>';
+        });
+}
+</script>
+{% endblock %}

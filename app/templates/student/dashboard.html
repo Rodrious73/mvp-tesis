@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Estudiante - Sistema de Tesis UNJFSC{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">¡Bienvenido, {{ current_user.first_name }}!</h1>
+        <p class="text-muted mb-0">
+            <i class="fas fa-graduation-cap me-1"></i>
+            {{ current_user.career if current_user.career else 'Estudiante' }}
+        </p>
+    </div>
+    {% if not thesis %}
+    <a href="{{ url_for('student.new_thesis') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Nueva Propuesta de Tesis
+    </a>
+    {% endif %}
+</div>
+
+<div class="row">
+    <!-- Estado de la Tesis -->
+    <div class="col-lg-8">
+        {% if thesis %}
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-book me-2"></i>Mi Tesis
+                </h5>
+                <span class="badge bg-{{ thesis.get_status_color() }} status-badge">
+                    {{ thesis.get_status_display() }}
+                </span>
+            </div>
+            <div class="card-body">
+                <h6 class="card-subtitle mb-3">{{ thesis.title }}</h6>
+                
+                {% if thesis.description %}
+                <p class="card-text">{{ thesis.description[:200] }}{% if thesis.description|length > 200 %}...{% endif %}</p>
+                {% endif %}
+                
+                <!-- Barra de progreso -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="text-muted">Progreso</small>
+                        <small class="text-muted">{{ thesis.get_progress_percentage() }}%</small>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" 
+                             style="width: {{ thesis.get_progress_percentage() }}%"
+                             aria-valuenow="{{ thesis.get_progress_percentage() }}" 
+                             aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Información adicional -->
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="border-end">
+                            <div class="h5 text-primary mb-1">{{ documents|length }}</div>
+                            <small class="text-muted">Documentos</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border-end">
+                            <div class="h5 text-info mb-1">
+                                {% if thesis.advisor %}1{% else %}0{% endif %}
+                            </div>
+                            <small class="text-muted">Asesor</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="h5 text-success mb-1">
+                            {{ thesis.created_at.strftime('%d/%m/%Y') }}
+                        </div>
+                        <small class="text-muted">Fecha Creación</small>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{{ url_for('student.thesis_detail', thesis_id=thesis.id) }}" 
+                       class="btn btn-primary">
+                        <i class="fas fa-eye me-1"></i>Ver Detalles
+                    </a>
+                    
+                    {% if thesis.can_be_edited_by(current_user) %}
+                    <a href="{{ url_for('student.edit_thesis', thesis_id=thesis.id) }}" 
+                       class="btn btn-outline-secondary">
+                        <i class="fas fa-edit me-1"></i>Editar
+                    </a>
+                    {% endif %}
+                    
+                    {% if thesis.status == 'draft' %}
+                    <a href="{{ url_for('student.submit_thesis', thesis_id=thesis.id) }}" 
+                       class="btn btn-success"
+                       onclick="return confirm('¿Estás seguro de presentar la tesis para revisión?')">
+                        <i class="fas fa-paper-plane me-1"></i>Presentar
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- No hay tesis -->
+        <div class="card mb-4">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-book-open text-muted mb-3" style="font-size: 4rem;"></i>
+                <h5 class="card-title">No tienes una tesis registrada</h5>
+                <p class="card-text text-muted mb-4">
+                    Comienza tu proceso de tesis registrando una nueva propuesta en el sistema.
+                </p>
+                <a href="{{ url_for('student.new_thesis') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Registrar Propuesta de Tesis
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Documentos recientes -->
+        {% if documents %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-file-alt me-2"></i>Documentos Recientes
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    {% for document in documents[:5] %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <i class="{{ document.get_icon_class() }} me-3"></i>
+                            <div>
+                                <h6 class="mb-1">{{ document.original_filename }}</h6>
+                                <small class="text-muted">
+                                    {{ document.get_document_type_display() }} - 
+                                    {{ document.created_at.strftime('%d/%m/%Y %H:%M') }}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="btn-group btn-group-sm">
+                            {% if document.can_be_viewed_online() %}
+                            <a href="{{ document.get_view_url() }}" class="btn btn-outline-info" target="_blank">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            {% endif %}
+                            <a href="{{ url_for('student.download_document', document_id=document.id) }}" 
+                               class="btn btn-outline-primary">
+                                <i class="fas fa-download"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                {% if documents|length > 5 %}
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('student.thesis_detail', thesis_id=thesis.id) }}" 
+                       class="btn btn-outline-secondary">
+                        Ver todos los documentos
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Sidebar con información -->
+    <div class="col-lg-4">
+        <!-- Notificaciones recientes -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-bell me-2"></i>Notificaciones
+                </h6>
+                <a href="{{ url_for('student.notifications') }}" class="btn btn-sm btn-outline-primary">
+                    Ver todas
+                </a>
+            </div>
+            <div class="card-body">
+                {% if notifications %}
+                    {% for notification in notifications %}
+                    <div class="d-flex mb-3 {% if not notification.is_read %}border-start border-primary border-3 ps-2{% endif %}">
+                        <div class="me-2">
+                            <i class="{{ notification.get_notification_icon() }}"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">{{ notification.title }}</h6>
+                            <p class="mb-1 small">{{ notification.message[:100] }}{% if notification.message|length > 100 %}...{% endif %}</p>
+                            <small class="text-muted">{{ notification.get_time_ago() }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center text-muted">
+                    <i class="fas fa-bell-slash mb-2"></i>
+                    <p class="mb-0">No hay notificaciones</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Información del usuario -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-user me-2"></i>Mi Información
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <strong>Nombre:</strong><br>
+                        <small class="text-muted">{{ current_user.full_name }}</small>
+                    </li>
+                    <li class="mb-2">
+                        <strong>Código:</strong><br>
+                        <small class="text-muted">{{ current_user.student_code or 'No asignado' }}</small>
+                    </li>
+                    <li class="mb-2">
+                        <strong>Carrera:</strong><br>
+                        <small class="text-muted">{{ current_user.career or 'No especificada' }}</small>
+                    </li>
+                    <li class="mb-0">
+                        <strong>Email:</strong><br>
+                        <small class="text-muted">{{ current_user.email }}</small>
+                    </li>
+                </ul>
+                
+                <div class="d-grid mt-3">
+                    <a href="{{ url_for('auth.profile') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-edit me-1"></i>Editar Perfil
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ayuda rápida -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-question-circle me-2"></i>Ayuda Rápida
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="accordion accordion-flush" id="helpAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" 
+                                    data-bs-toggle="collapse" data-bs-target="#help1">
+                                ¿Cómo registro mi tesis?
+                            </button>
+                        </h2>
+                        <div id="help1" class="accordion-collapse collapse" 
+                             data-bs-parent="#helpAccordion">
+                            <div class="accordion-body">
+                                <small>
+                                    1. Haz clic en "Nueva Propuesta de Tesis"<br>
+                                    2. Completa la información solicitada<br>
+                                    3. Guarda tu propuesta como borrador<br>
+                                    4. Cuando esté lista, preséntala para revisión
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" 
+                                    data-bs-toggle="collapse" data-bs-target="#help2">
+                                ¿Cómo subo documentos?
+                            </button>
+                        </h2>
+                        <div id="help2" class="accordion-collapse collapse" 
+                             data-bs-parent="#helpAccordion">
+                            <div class="accordion-body">
+                                <small>
+                                    1. Ve a los detalles de tu tesis<br>
+                                    2. Busca la sección "Subir Documento"<br>
+                                    3. Selecciona el tipo de documento<br>
+                                    4. Sube tu archivo (PDF recomendado)
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

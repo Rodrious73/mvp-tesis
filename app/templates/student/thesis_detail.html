@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+{% block title %}Detalle de Tesis - {{ thesis.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-1">{{ thesis.title }}</h1>
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-user me-1"></i>{{ thesis.student.get_full_name() }} - 
+                        <i class="fas fa-graduation-cap me-1"></i>{{ thesis.career }}
+                    </p>
+                </div>
+                <div>
+                    <span class="badge bg-{{ thesis.get_status_color() }} fs-6">
+                        <i class="fas fa-{{ thesis.get_status_icon() }} me-1"></i>
+                        {{ thesis.get_status_display() }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información Principal -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Información de la Tesis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if thesis.description %}
+                    <div class="mb-3">
+                        <h6><i class="fas fa-align-left me-2"></i>Descripción</h6>
+                        <p class="text-muted">{{ thesis.description }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if thesis.research_line %}
+                    <div class="mb-3">
+                        <h6><i class="fas fa-search me-2"></i>Línea de Investigación</h6>
+                        <p class="text-muted">{{ thesis.research_line }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if thesis.keywords %}
+                    <div class="mb-3">
+                        <h6><i class="fas fa-tags me-2"></i>Palabras Clave</h6>
+                        <div>
+                            {% for keyword in thesis.keywords.split(',') %}
+                                <span class="badge bg-secondary me-1">{{ keyword.strip() }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-calendar-plus me-2"></i>Fecha de Creación</h6>
+                            <p class="text-muted">{{ thesis.created_at | format_date }}</p>
+                        </div>
+                        {% if thesis.submitted_at %}
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-paper-plane me-2"></i>Fecha de Envío</h6>
+                            <p class="text-muted">{{ thesis.submitted_at | format_date }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Archivos -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-file-alt me-2"></i>Archivos de la Tesis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if documents %}
+                        {% for document in documents %}
+                        <div class="d-flex justify-content-between align-items-center border rounded p-3 mb-3">
+                            <div>
+                                <h6 class="mb-1">
+                                    {% if document.document_type == 'thesis' %}
+                                        <i class="fas fa-file-pdf text-danger me-2"></i>
+                                        Documento Principal
+                                    {% elif document.document_type == 'proposal' %}
+                                        <i class="fas fa-file-word text-primary me-2"></i>
+                                        Propuesta de Tesis
+                                    {% elif document.document_type == 'additional' %}
+                                        <i class="fas fa-file-archive text-warning me-2"></i>
+                                        Documento Adicional
+                                    {% else %}
+                                        <i class="fas fa-file text-secondary me-2"></i>
+                                        {{ document.document_type|title }}
+                                    {% endif %}
+                                </h6>
+                                <small class="text-muted">
+                                    {{ document.filename }} 
+                                    <span class="text-muted">• Subido: {{ document.uploaded_at | format_date }}</span>
+                                    {% if document.file_size %}
+                                        <span class="text-muted">• {{ (document.file_size / 1024 / 1024)|round(2) }} MB</span>
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <div>
+                                <a href="{{ url_for('student.download_document', document_id=document.id) }}" 
+                                   class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-download me-1"></i>Descargar
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-file-upload fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No hay archivos adjuntos</h5>
+                        <p class="text-muted">Los archivos aparecerán aquí una vez que los subas.</p>
+                        {% if thesis.status == 'draft' %}
+                        <a href="{{ url_for('student.edit_thesis', thesis_id=thesis.id) }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Agregar Archivos
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Comentarios -->
+            {% if comments %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-comments me-2"></i>Comentarios y Retroalimentación
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for comment in comments %}
+                    <div class="border-start border-primary border-3 ps-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">
+                                    <i class="fas fa-user-circle me-1"></i>
+                                    {{ comment.author.get_full_name() }}
+                                    <span class="badge bg-secondary ms-2">{{ comment.author.role|title }}</span>
+                                </h6>
+                                <small class="text-muted">{{ comment.created_at | from_now }}</small>
+                            </div>
+                        </div>
+                        <p class="mt-2 mb-0">{{ comment.content }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Panel Lateral -->
+        <div class="col-md-4">
+            <!-- Estado y Acciones -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-cogs me-2"></i>Acciones
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if thesis.status == 'draft' %}
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('student.edit_thesis', thesis_id=thesis.id) }}" 
+                           class="btn btn-warning">
+                            <i class="fas fa-edit me-1"></i>Editar Tesis
+                        </a>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#submitModal">
+                            <i class="fas fa-paper-plane me-1"></i>Enviar para Revisión
+                        </button>
+                    </div>
+                    {% elif thesis.status == 'revision_required' %}
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('student.edit_thesis', thesis_id=thesis.id) }}" 
+                           class="btn btn-warning">
+                            <i class="fas fa-edit me-1"></i>Corregir Tesis
+                        </a>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#submitModal">
+                            <i class="fas fa-paper-plane me-1"></i>Reenviar
+                        </button>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        La tesis está en estado: <strong>{{ thesis.get_status_display() }}</strong>
+                    </div>
+                    {% endif %}
+
+                    <hr>
+                    
+                    <div class="d-grid">
+                        <a href="{{ url_for('student.dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Volver al Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Equipo de Trabajo -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-users me-2"></i>Equipo de Trabajo
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Estudiante -->
+                    <div class="mb-3">
+                        <h6 class="text-primary">
+                            <i class="fas fa-user-graduate me-1"></i>Estudiante
+                        </h6>
+                        <p class="mb-1">{{ thesis.student.get_full_name() }}</p>
+                        <small class="text-muted">{{ thesis.student.email }}</small>
+                    </div>
+
+                    <!-- Asesor -->
+                    {% if thesis.advisor %}
+                    <div class="mb-3">
+                        <h6 class="text-success">
+                            <i class="fas fa-chalkboard-teacher me-1"></i>Asesor
+                        </h6>
+                        <p class="mb-1">{{ thesis.advisor.get_full_name() }}</p>
+                        <small class="text-muted">{{ thesis.advisor.email }}</small>
+                    </div>
+                    {% else %}
+                    <div class="mb-3">
+                        <h6 class="text-muted">
+                            <i class="fas fa-chalkboard-teacher me-1"></i>Asesor
+                        </h6>
+                        <p class="text-muted">Sin asignar</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Jurado -->
+                    {% if thesis.jury %}
+                    <div class="mb-3">
+                        <h6 class="text-info">
+                            <i class="fas fa-gavel me-1"></i>Jurado
+                        </h6>
+                        <p class="mb-1">{{ thesis.jury.get_full_name() }}</p>
+                        <small class="text-muted">{{ thesis.jury.email }}</small>
+                    </div>
+                    {% else %}
+                    <div class="mb-3">
+                        <h6 class="text-muted">
+                            <i class="fas fa-gavel me-1"></i>Jurado
+                        </h6>
+                        <p class="text-muted">Sin asignar</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmación para Envío -->
+<div class="modal fade" id="submitModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-paper-plane me-2"></i>Enviar Tesis para Revisión
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas enviar esta tesis para revisión?</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Importante:</strong> Una vez enviada, no podrás editar la información hasta que recibas comentarios.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form method="POST" action="{{ url_for('student.submit_thesis', thesis_id=thesis.id) }}" style="display: inline;">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-paper-plane me-1"></i>Confirmar Envío
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

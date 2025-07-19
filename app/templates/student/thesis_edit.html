@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+{% block title %}Editar Tesis - {{ thesis.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="fas fa-edit"></i> Editar Tesis
+                        </h4>
+                        <span class="badge bg-{{ thesis.get_status_color() }}">
+                            {{ thesis.get_status_display() }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('student.edit_thesis', thesis_id=thesis.id) }}" method="post" enctype="multipart/form-data" id="thesisForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Título de la Tesis <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="title" name="title" required 
+                                           value="{{ thesis.title }}" placeholder="Ingrese el título completo de la tesis">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="career" class="form-label">Carrera <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="career" name="career" required>
+                                        <option value="">Seleccione una carrera</option>
+                                        <option value="Ingeniería de Sistemas" {{ 'selected' if thesis.career == 'Ingeniería de Sistemas' }}>Ingeniería de Sistemas</option>
+                                        <option value="Ingeniería Industrial" {{ 'selected' if thesis.career == 'Ingeniería Industrial' }}>Ingeniería Industrial</option>
+                                        <option value="Ingeniería Civil" {{ 'selected' if thesis.career == 'Ingeniería Civil' }}>Ingeniería Civil</option>
+                                        <option value="Administración" {{ 'selected' if thesis.career == 'Administración' }}>Administración</option>
+                                        <option value="Contabilidad" {{ 'selected' if thesis.career == 'Contabilidad' }}>Contabilidad</option>
+                                        <option value="Educación" {{ 'selected' if thesis.career == 'Educación' }}>Educación</option>
+                                        <option value="Enfermería" {{ 'selected' if thesis.career == 'Enfermería' }}>Enfermería</option>
+                                        <option value="Medicina" {{ 'selected' if thesis.career == 'Medicina' }}>Medicina</option>
+                                        <option value="Derecho" {{ 'selected' if thesis.career == 'Derecho' }}>Derecho</option>
+                                        <option value="Psicología" {{ 'selected' if thesis.career == 'Psicología' }}>Psicología</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descripción/Resumen <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="description" name="description" rows="5" required 
+                                      placeholder="Escriba una descripción detallada de la investigación">{{ thesis.description or '' }}</textarea>
+                            <div class="form-text">Descripción detallada del proyecto de investigación</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="research_line" class="form-label">Línea de Investigación</label>
+                                    <input type="text" class="form-control" id="research_line" name="research_line" 
+                                           value="{{ thesis.research_line or '' }}" placeholder="Ej: Tecnologías de la Información">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="methodology" class="form-label">Metodología</label>
+                                    <select class="form-select" id="methodology" name="methodology">
+                                        <option value="">Seleccione metodología</option>
+                                        <option value="Cuantitativa" {{ 'selected' if thesis.methodology == 'Cuantitativa' }}>Cuantitativa</option>
+                                        <option value="Cualitativa" {{ 'selected' if thesis.methodology == 'Cualitativa' }}>Cualitativa</option>
+                                        <option value="Mixta" {{ 'selected' if thesis.methodology == 'Mixta' }}>Mixta</option>
+                                        <option value="Experimental" {{ 'selected' if thesis.methodology == 'Experimental' }}>Experimental</option>
+                                        <option value="Descriptiva" {{ 'selected' if thesis.methodology == 'Descriptiva' }}>Descriptiva</option>
+                                        <option value="Exploratoria" {{ 'selected' if thesis.methodology == 'Exploratoria' }}>Exploratoria</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Keywords -->
+                        <div class="mb-3">
+                            <label for="keywords" class="form-label">Palabras Clave</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="keywordInput" 
+                                       placeholder="Escriba una palabra clave y presione Enter">
+                                <button type="button" class="btn btn-outline-secondary" id="addKeyword">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div id="keywordsList" class="mt-2"></div>
+                            <input type="hidden" id="keywords" name="keywords" value="{{ thesis.keywords or '' }}">
+                        </div>
+
+                        <!-- File Upload Section -->
+                        <div class="mb-3">
+                            <label class="form-label">Archivos de la Tesis</label>
+                            <div class="border rounded p-3">
+                                {% if thesis.thesis_file %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-file-pdf me-2"></i>
+                                    Archivo actual: <strong>{{ thesis.thesis_file }}</strong>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="mb-3">
+                                    <label for="thesis_file" class="form-label">
+                                        {% if thesis.thesis_file %}
+                                        Reemplazar Archivo Principal (PDF)
+                                        {% else %}
+                                        Archivo Principal (PDF) <span class="text-danger">*</span>
+                                        {% endif %}
+                                    </label>
+                                    <input type="file" class="form-control" id="thesis_file" name="thesis_file" 
+                                           accept=".pdf" {{ 'required' if not thesis.thesis_file }}>
+                                    <div class="form-text">Formato: PDF. Tamaño máximo: 10MB</div>
+                                </div>
+                                
+                                {% if thesis.additional_files %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-file-archive me-2"></i>
+                                    Archivos adicionales actuales: <strong>{{ thesis.additional_files }}</strong>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="mb-3">
+                                    <label for="additional_files" class="form-label">
+                                        {% if thesis.additional_files %}
+                                        Reemplazar Archivos Adicionales (opcional)
+                                        {% else %}
+                                        Archivos Adicionales (opcional)
+                                        {% endif %}
+                                    </label>
+                                    <input type="file" class="form-control" id="additional_files" name="additional_files" 
+                                           accept=".pdf,.doc,.docx" multiple>
+                                    <div class="form-text">Formatos: PDF, DOC, DOCX. Tamaño máximo por archivo: 10MB</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('student.thesis_detail', thesis_id=thesis.id) }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Keywords Management Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize keywords from existing data
+    let keywords = [];
+    const existingKeywords = document.getElementById('keywords').value;
+    if (existingKeywords) {
+        keywords = existingKeywords.split(',').map(k => k.trim()).filter(k => k);
+    }
+    
+    const keywordInput = document.getElementById('keywordInput');
+    const addKeywordBtn = document.getElementById('addKeyword');
+    const keywordsList = document.getElementById('keywordsList');
+    const keywordsHidden = document.getElementById('keywords');
+    
+    function addKeyword() {
+        const keyword = keywordInput.value.trim();
+        if (keyword && !keywords.includes(keyword)) {
+            keywords.push(keyword);
+            updateKeywordsList();
+            keywordInput.value = '';
+        }
+    }
+    
+    function removeKeyword(keyword) {
+        keywords = keywords.filter(k => k !== keyword);
+        updateKeywordsList();
+    }
+    
+    function updateKeywordsList() {
+        keywordsList.innerHTML = '';
+        keywords.forEach(keyword => {
+            const span = document.createElement('span');
+            span.className = 'badge bg-secondary me-2 mb-2';
+            span.innerHTML = `${keyword} <button type="button" class="btn-close btn-close-white ms-1" style="font-size: 0.7em;" onclick="removeKeyword('${keyword}')"></button>`;
+            keywordsList.appendChild(span);
+        });
+        keywordsHidden.value = keywords.join(',');
+    }
+    
+    // Make removeKeyword available globally
+    window.removeKeyword = removeKeyword;
+    
+    // Initialize display
+    updateKeywordsList();
+    
+    addKeywordBtn.addEventListener('click', addKeyword);
+    keywordInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addKeyword();
+        }
+    });
+    
+    // File validation
+    const thesisFile = document.getElementById('thesis_file');
+    const additionalFiles = document.getElementById('additional_files');
+    
+    function validateFile(file, maxSize = 10485760) { // 10MB
+        if (file.size > maxSize) {
+            alert(`El archivo ${file.name} excede el tamaño máximo de 10MB`);
+            return false;
+        }
+        return true;
+    }
+    
+    thesisFile.addEventListener('change', function() {
+        if (this.files[0] && !validateFile(this.files[0])) {
+            this.value = '';
+        }
+    });
+    
+    additionalFiles.addEventListener('change', function() {
+        for (let file of this.files) {
+            if (!validateFile(file)) {
+                this.value = '';
+                break;
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

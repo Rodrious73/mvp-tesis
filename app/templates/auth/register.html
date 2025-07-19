@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Registrarse - Sistema de Tesis UNJFSC{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-header bg-success text-white text-center">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-user-plus me-2"></i>
+                    Crear Cuenta
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="registerForm">
+                    <!-- Información básica -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="first_name" class="form-label">
+                                <i class="fas fa-user me-1"></i>
+                                Nombres *
+                            </label>
+                            <input type="text" class="form-control" id="first_name" 
+                                   name="first_name" required placeholder="Tus nombres">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="last_name" class="form-label">
+                                <i class="fas fa-user me-1"></i>
+                                Apellidos *
+                            </label>
+                            <input type="text" class="form-control" id="last_name" 
+                                   name="last_name" required placeholder="Tus apellidos">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">
+                            <i class="fas fa-envelope me-1"></i>
+                            Correo Electrónico *
+                        </label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               required placeholder="tu@email.com">
+                        <div class="form-text">
+                            Se recomienda usar el correo institucional (@unjfsc.edu.pe)
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="role" class="form-label">
+                            <i class="fas fa-id-badge me-1"></i>
+                            Tipo de Usuario *
+                        </label>
+                        <select class="form-select" id="role" name="role" required>
+                            <option value="">Selecciona tu rol</option>
+                            <option value="student">Estudiante</option>
+                            <option value="teacher">Docente</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Campos específicos para estudiantes -->
+                    <div id="studentFields" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="student_code" class="form-label">
+                                    <i class="fas fa-id-card me-1"></i>
+                                    Código de Estudiante
+                                </label>
+                                <input type="text" class="form-control" id="student_code" 
+                                       name="student_code" placeholder="2024100001">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="career" class="form-label">
+                                    <i class="fas fa-graduation-cap me-1"></i>
+                                    Carrera
+                                </label>
+                                <select class="form-select" id="career" name="career">
+                                    <option value="">Selecciona tu carrera</option>
+                                    <option value="Ingeniería de Sistemas">Ingeniería de Sistemas</option>
+                                    <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+                                    <option value="Ingeniería Civil">Ingeniería Civil</option>
+                                    <option value="Administración">Administración</option>
+                                    <option value="Contabilidad">Contabilidad</option>
+                                    <option value="Derecho">Derecho</option>
+                                    <option value="Medicina">Medicina</option>
+                                    <option value="Educación">Educación</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Campos específicos para docentes -->
+                    <div id="teacherFields" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="department" class="form-label">
+                                    <i class="fas fa-building me-1"></i>
+                                    Departamento
+                                </label>
+                                <input type="text" class="form-control" id="department" 
+                                       name="department" placeholder="Departamento académico">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="specialization" class="form-label">
+                                    <i class="fas fa-star me-1"></i>
+                                    Especialización
+                                </label>
+                                <input type="text" class="form-control" id="specialization" 
+                                       name="specialization" placeholder="Área de especialización">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contraseñas -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock me-1"></i>
+                                Contraseña *
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password" 
+                                       name="password" required placeholder="Mínimo 6 caracteres">
+                                <button class="btn btn-outline-secondary" type="button" 
+                                        id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="form-text">
+                                La contraseña debe tener al menos 6 caracteres
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="confirm_password" class="form-label">
+                                <i class="fas fa-lock me-1"></i>
+                                Confirmar Contraseña *
+                            </label>
+                            <input type="password" class="form-control" id="confirm_password" 
+                                   name="confirm_password" required placeholder="Repite la contraseña">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="terms" required>
+                        <label class="form-check-label" for="terms">
+                            Acepto los términos y condiciones del sistema *
+                        </label>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-user-plus me-2"></i>
+                            Crear Cuenta
+                        </button>
+                    </div>
+                </form>
+                
+                <hr class="my-4">
+                
+                <div class="text-center">
+                    <p class="mb-0">
+                        ¿Ya tienes una cuenta? 
+                        <a href="{{ url_for('auth.login') }}" class="text-decoration-none">
+                            Inicia sesión aquí
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Mostrar/ocultar campos según el rol seleccionado
+    document.getElementById('role').addEventListener('change', function() {
+        const studentFields = document.getElementById('studentFields');
+        const teacherFields = document.getElementById('teacherFields');
+        const role = this.value;
+        
+        if (role === 'student') {
+            studentFields.style.display = 'block';
+            teacherFields.style.display = 'none';
+            
+            // Hacer campos de estudiante requeridos
+            document.getElementById('student_code').required = true;
+            document.getElementById('career').required = true;
+            document.getElementById('department').required = false;
+            document.getElementById('specialization').required = false;
+        } else if (role === 'teacher') {
+            studentFields.style.display = 'none';
+            teacherFields.style.display = 'block';
+            
+            // Hacer campos de docente requeridos
+            document.getElementById('student_code').required = false;
+            document.getElementById('career').required = false;
+            document.getElementById('department').required = true;
+            document.getElementById('specialization').required = true;
+        } else {
+            studentFields.style.display = 'none';
+            teacherFields.style.display = 'none';
+            
+            // Ningún campo específico requerido
+            document.getElementById('student_code').required = false;
+            document.getElementById('career').required = false;
+            document.getElementById('department').required = false;
+            document.getElementById('specialization').required = false;
+        }
+    });
+    
+    // Alternar visibilidad de contraseña
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const passwordField = document.getElementById('password');
+        const toggleIcon = this.querySelector('i');
+        
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    });
+    
+    // Validar que las contraseñas coincidan
+    document.getElementById('confirm_password').addEventListener('input', function() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = this.value;
+        
+        if (password !== confirmPassword) {
+            this.setCustomValidity('Las contraseñas no coinciden');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+    
+    // Verificar si el email ya existe
+    document.getElementById('email').addEventListener('blur', function() {
+        const email = this.value;
+        if (email) {
+            fetch(`/auth/api/check-email?email=${encodeURIComponent(email)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists) {
+                        this.setCustomValidity('Este email ya está registrado');
+                        this.classList.add('is-invalid');
+                    } else {
+                        this.setCustomValidity('');
+                        this.classList.remove('is-invalid');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking email:', error);
+                });
+        }
+    });
+</script>
+{% endblock %}

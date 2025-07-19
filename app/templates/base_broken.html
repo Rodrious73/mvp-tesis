@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Gestión de Tesis - UNJFSC{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --info-color: #17a2b8;
+            --light-gray: #f8f9fa;
+            --dark-gray: #6c757d;
+            --border-color: #dee2e6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-gray);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--primary-color) !important;
+        }
+
+        .navbar-brand i {
+            color: var(--secondary-color);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary-color), #34495e);
+            min-height: calc(100vh - 76px);
+            padding: 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        /* Main content */
+        .main-content {
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            margin: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            flex: 1;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--secondary-color), #5dade2);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 500;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color), #5dade2);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #58d68d);
+            border: none;
+            border-radius: 25px;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning-color), #f7dc6f);
+            border: none;
+            border-radius: 25px;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent-color), #ec7063);
+            border: none;
+            border-radius: 25px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: white;
+            padding: 30px 0;
+            margin-top: auto;
+        }
+
+        .footer a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: white;
+        }
+
+        /* Notifications */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Forms */
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        /* Tables */
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .table thead th {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                min-height: auto;
+            }
+            
+            .main-content {
+                margin: 10px;
+                padding: 20px;
+            }
+        }
+
+        /* Status badges */
+        .status-pendiente { background-color: var(--warning-color); }
+        .status-en_revision { background-color: var(--info-color); }
+        .status-observado { background-color: var(--accent-color); }
+        .status-aprobado { background-color: var(--success-color); }
+        .status-rechazado { background-color: #6c757d; }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">
+                <i class="fas fa-graduation-cap me-2"></i>
+                Sistema de Tesis - UNJFSC
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
+                        <!-- Notificaciones -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link position-relative" href="#" id="notificationsDropdown" 
+                               role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-badge" id="notificationCount" style="display: none;">0</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" style="width: 350px;">
+                                <li><h6 class="dropdown-header">Notificaciones</h6></li>
+                                <div id="notificationsList">
+                                    <li><a class="dropdown-item text-muted" href="#">No hay notificaciones</a></li>
+                                </div>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-center" href="{% if current_user.role == 'student' %}{{ url_for('student.notifications') }}{% elif current_user.role == 'teacher' %}{{ url_for('teacher.notifications') }}{% endif %}">
+                                        Ver todas las notificaciones
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        
+                        <!-- Usuario -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" 
+                               role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i>
+                                {{ current_user.first_name }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><h6 class="dropdown-header">{{ current_user.full_name }}</h6></li>
+                                <li><span class="dropdown-item-text text-muted">{{ current_user.get_role_display() }}</span></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}">
+                                    <i class="fas fa-user me-2"></i>Mi Perfil
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.change_password') }}">
+                                    <i class="fas fa-lock me-2"></i>Cambiar Contraseña
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Iniciar Sesión
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.register') }}">
+                                <i class="fas fa-user-plus me-1"></i>Registrarse
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Alertas -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container-fluid mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {% if category == 'success' %}
+                            <i class="fas fa-check-circle me-2"></i>
+                        {% elif category == 'error' %}
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                        {% elif category == 'warning' %}
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                        {% else %}
+                            <i class="fas fa-info-circle me-2"></i>
+                        {% endif %}
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Contenido Principal -->
+    {% if current_user.is_authenticated %}
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-3 col-lg-2 px-0">
+                    <div class="sidebar">
+                        <nav class="nav flex-column">
+                            {% if current_user.role == 'student' %}
+                                <a class="nav-link" href="{{ url_for('student.dashboard') }}">
+                                    <i class="fas fa-tachometer-alt"></i>Dashboard
+                                </a>
+                                <a class="nav-link" href="{{ url_for('student.new_thesis') }}">
+                                    <i class="fas fa-plus"></i>Nueva Tesis
+                                </a>
+                                <a class="nav-link" href="{{ url_for('student.notifications') }}">
+                                    <i class="fas fa-bell"></i>Notificaciones
+                                </a>
+                            {% elif current_user.role == 'teacher' %}
+                                <a class="nav-link" href="{{ url_for('teacher.dashboard') }}">
+                                    <i class="fas fa-tachometer-alt"></i>Dashboard
+                                </a>
+                                <a class="nav-link" href="{{ url_for('teacher.thesis_list') }}">
+                                    <i class="fas fa-list"></i>Mis Tesis
+                                </a>
+                                <a class="nav-link" href="{{ url_for('teacher.notifications') }}">
+                                    <i class="fas fa-bell"></i>Notificaciones
+                                </a>
+                            {% elif current_user.role == 'admin' %}
+                                <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+                                    <i class="fas fa-tachometer-alt"></i>Dashboard
+                                </a>
+                                <a class="nav-link" href="{{ url_for('admin.users_list') }}">
+                                    <i class="fas fa-users"></i>Usuarios
+                                </a>
+                                <a class="nav-link" href="{{ url_for('admin.thesis_list') }}">
+                                    <i class="fas fa-book"></i>Tesis
+                                </a>
+                                <a class="nav-link" href="{{ url_for('admin.statistics') }}">
+                                    <i class="fas fa-chart-bar"></i>Estadísticas
+                                </a>
+                                <a class="nav-link" href="{{ url_for('admin.broadcast_notification') }}">
+                                    <i class="fas fa-bullhorn"></i>Notificaciones
+                                </a>
+                            {% endif %}
+                            
+                            <hr class="my-3" style="border-color: rgba(255,255,255,0.2);">
+                            
+                            <a class="nav-link" href="{{ url_for('main.help') }}">
+                                <i class="fas fa-question-circle"></i>Ayuda
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+                
+                <!-- Contenido principal -->
+                <div class="col-md-9 col-lg-10">
+                    <div class="main-content">
+                        {% block content %}{% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Para usuarios no autenticados -->
+        <div class="container mt-4">
+            <div class="main-content">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <footer class="footer mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Sistema de Gestión de Tesis</h5>
+                    <p class="mb-0">Universidad Nacional José Faustino Sánchez Carrión</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-2">
+                        <a href="{{ url_for('main.about') }}">Acerca de</a> |
+                        <a href="{{ url_for('main.help') }}">Ayuda</a> |
+                        <a href="mailto:soporte@unjfsc.edu.pe">Soporte</a>
+                    </p>
+                    <p class="mb-0 text-muted">&copy; 2025 UNJFSC. Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Notificaciones en tiempo real -->
+    <script>
+        // Cargar notificaciones al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if current_user.is_authenticated %}
+                loadNotifications();
+                // Actualizar notificaciones cada 30 segundos
+                setInterval(loadNotifications, 30000);
+            {% endif %}
+        });
+
+        function loadNotifications() {
+            fetch('/api/notifications')
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.getElementById('notificationCount');
+                    const list = document.getElementById('notificationsList');
+                    
+                    if (data.count > 0) {
+                        badge.textContent = data.count;
+                        badge.style.display = 'block';
+                        
+                        list.innerHTML = '';
+                        data.notifications.forEach(notification => {
+                            const item = document.createElement('li');
+                            item.innerHTML = `
+                                <a class="dropdown-item" href="#">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="fw-bold">${notification.title}</span>
+                                        <small class="text-muted">${notification.created_at}</small>
+                                    </div>
+                                    <p class="mb-0 text-muted small">${notification.message}</p>
+                                </a>
+                            `;
+                            list.appendChild(item);
+                        });
+                    } else {
+                        badge.style.display = 'none';
+                        list.innerHTML = '<li><a class="dropdown-item text-muted" href="#">No hay notificaciones</a></li>';
+                    }
+                })
+                .catch(error => console.error('Error cargando notificaciones:', error));
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

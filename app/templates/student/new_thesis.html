@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva Tesis - Sistema de Tesis UNJFSC{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="fas fa-plus-circle me-2"></i>
+                Nueva Propuesta de Tesis
+            </h1>
+            
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-book me-2"></i>
+                        Información de la Tesis
+                    </h5>
+                </div>
+                
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <!-- Información básica -->
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="title" class="form-label">
+                                    <i class="fas fa-heading me-1"></i>
+                                    Título de la Tesis *
+                                </label>
+                                <input type="text" class="form-control" id="title" name="title" 
+                                       required maxlength="500" 
+                                       placeholder="Ingresa el título completo de tu tesis">
+                                <div class="form-text">
+                                    Debe ser específico y descriptivo del tema de investigación.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="career" class="form-label">
+                                    <i class="fas fa-graduation-cap me-1"></i>
+                                    Carrera *
+                                </label>
+                                <select class="form-select" id="career" name="career" required>
+                                    <option value="">Selecciona tu carrera</option>
+                                    <option value="Ingeniería de Sistemas">Ingeniería de Sistemas</option>
+                                    <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+                                    <option value="Ingeniería Civil">Ingeniería Civil</option>
+                                    <option value="Administración">Administración</option>
+                                    <option value="Contabilidad">Contabilidad</option>
+                                    <option value="Derecho">Derecho</option>
+                                    <option value="Medicina">Medicina</option>
+                                    <option value="Enfermería">Enfermería</option>
+                                    <option value="Educación">Educación</option>
+                                    <option value="Psicología">Psicología</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="research_line" class="form-label">
+                                    <i class="fas fa-search me-1"></i>
+                                    Línea de Investigación
+                                </label>
+                                <input type="text" class="form-control" id="research_line" 
+                                       name="research_line" maxlength="200"
+                                       placeholder="Ej: Tecnologías de la Información">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">
+                                <i class="fas fa-align-left me-1"></i>
+                                Descripción del Proyecto
+                            </label>
+                            <textarea class="form-control" id="description" name="description" 
+                                      rows="6" placeholder="Describe brevemente tu proyecto de tesis, objetivos principales, metodología y resultados esperados..."></textarea>
+                            <div class="form-text">
+                                Incluye el problema a resolver, objetivos, metodología y resultados esperados.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="keywords" class="form-label">
+                                <i class="fas fa-tags me-1"></i>
+                                Palabras Clave
+                            </label>
+                            <input type="text" class="form-control" id="keywords" name="keywords" 
+                                   maxlength="500" placeholder="Ej: tecnología, innovación, gestión, análisis">
+                            <div class="form-text">
+                                Separa las palabras clave con comas. Máximo 10 palabras.
+                            </div>
+                        </div>
+                        
+                        <!-- Documentos -->
+                        <div class="mb-4">
+                            <h6 class="border-bottom pb-2">
+                                <i class="fas fa-file-upload me-1"></i>
+                                Documentos (Opcional)
+                            </h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="proposal_file" class="form-label">
+                                        Propuesta de Tesis (PDF)
+                                    </label>
+                                    <input type="file" class="form-control" id="proposal_file" 
+                                           name="proposal_file" accept=".pdf">
+                                    <div class="form-text">
+                                        Archivo PDF con la propuesta inicial (opcional).
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="additional_file" class="form-label">
+                                        Documento Adicional
+                                    </label>
+                                    <input type="file" class="form-control" id="additional_file" 
+                                           name="additional_file" accept=".pdf,.doc,.docx">
+                                    <div class="form-text">
+                                        PDF, DOC o DOCX (opcional).
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Información importante -->
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Información Importante
+                            </h6>
+                            <ul class="mb-0">
+                                <li>Tu propuesta será revisada por un asesor asignado por la administración.</li>
+                                <li>Podrás editar la información mientras esté en estado "Borrador".</li>
+                                <li>Una vez presentada, solo podrás modificarla si requiere revisión.</li>
+                                <li>Los archivos deben ser menores a 10 MB cada uno.</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Botones -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="submit" name="action" value="save_draft" 
+                                        class="btn btn-secondary w-100">
+                                    <i class="fas fa-save me-2"></i>
+                                    Guardar como Borrador
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="submit" name="action" value="submit" 
+                                        class="btn btn-primary w-100">
+                                    <i class="fas fa-paper-plane me-2"></i>
+                                    Presentar para Revisión
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Validación de archivos
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    
+    fileInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                // Verificar tamaño (10 MB máximo)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('El archivo es demasiado grande. Máximo 10 MB.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Verificar tipo de archivo
+                const allowedTypes = this.accept.split(',').map(type => type.trim());
+                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                
+                if (!allowedTypes.includes(fileExtension)) {
+                    alert('Tipo de archivo no permitido.');
+                    this.value = '';
+                    return;
+                }
+            }
+        });
+    });
+    
+    // Contador de caracteres para palabras clave
+    const keywordsInput = document.getElementById('keywords');
+    if (keywordsInput) {
+        keywordsInput.addEventListener('input', function() {
+            const words = this.value.split(',').filter(word => word.trim().length > 0);
+            if (words.length > 10) {
+                this.setCustomValidity('Máximo 10 palabras clave');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,397 @@
+{% extends "base.html" %}
+
+{% block title %}Ayuda - Sistema de Tesis UNJFSC{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-3">
+            <!-- Navegación de ayuda -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Contenido de Ayuda
+                    </h6>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="#getting-started" class="list-group-item list-group-item-action">
+                        <i class="fas fa-play me-2"></i>Primeros Pasos
+                    </a>
+                    <a href="#student-guide" class="list-group-item list-group-item-action">
+                        <i class="fas fa-graduation-cap me-2"></i>Guía para Estudiantes
+                    </a>
+                    <a href="#teacher-guide" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chalkboard-teacher me-2"></i>Guía para Docentes
+                    </a>
+                    <a href="#admin-guide" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user-cog me-2"></i>Guía para Administradores
+                    </a>
+                    <a href="#faq" class="list-group-item list-group-item-action">
+                        <i class="fas fa-question-circle me-2"></i>Preguntas Frecuentes
+                    </a>
+                    <a href="#support" class="list-group-item list-group-item-action">
+                        <i class="fas fa-life-ring me-2"></i>Soporte Técnico
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-9">
+            <!-- Contenido de ayuda -->
+            <div class="mb-4">
+                <h1 class="h3 mb-3">
+                    <i class="fas fa-question-circle text-primary me-2"></i>
+                    Centro de Ayuda
+                </h1>
+                <p class="text-muted">
+                    Encuentra toda la información que necesitas para usar el Sistema de Gestión de Tesis de la UNJFSC.
+                </p>
+            </div>
+            
+            <!-- Primeros Pasos -->
+            <section id="getting-started" class="mb-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-play text-success me-2"></i>
+                            Primeros Pasos
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>1. Crear una cuenta</h6>
+                                <p class="small">
+                                    Regístrate en el sistema seleccionando tu rol (estudiante o docente) 
+                                    y completando la información requerida.
+                                </p>
+                                
+                                <h6>2. Verificar tu email</h6>
+                                <p class="small">
+                                    Usa preferiblemente tu correo institucional (@unjfsc.edu.pe) 
+                                    para facilitar la comunicación.
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>3. Completar tu perfil</h6>
+                                <p class="small">
+                                    Accede a tu perfil y completa toda la información académica 
+                                    necesaria según tu rol.
+                                </p>
+                                
+                                <h6>4. Explorar el dashboard</h6>
+                                <p class="small">
+                                    Familiarízate con las opciones disponibles en tu panel 
+                                    de control personalizado.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Guía para Estudiantes -->
+            <section id="student-guide" class="mb-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-graduation-cap text-primary me-2"></i>
+                            Guía para Estudiantes
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="accordion" id="studentAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" 
+                                            data-bs-target="#student1">
+                                        Registrar una propuesta de tesis
+                                    </button>
+                                </h2>
+                                <div id="student1" class="accordion-collapse collapse show" 
+                                     data-bs-parent="#studentAccordion">
+                                    <div class="accordion-body">
+                                        <ol>
+                                            <li>Ve a tu dashboard y haz clic en "Nueva Propuesta de Tesis"</li>
+                                            <li>Completa el formulario con el título, descripción y palabras clave</li>
+                                            <li>Selecciona tu carrera y línea de investigación</li>
+                                            <li>Guarda como borrador para continuar editando más tarde</li>
+                                            <li>Cuando esté lista, preséntala para revisión</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                            data-bs-target="#student2">
+                                        Subir documentos
+                                    </button>
+                                </h2>
+                                <div id="student2" class="accordion-collapse collapse" 
+                                     data-bs-parent="#studentAccordion">
+                                    <div class="accordion-body">
+                                        <ul>
+                                            <li>Accede a los detalles de tu tesis</li>
+                                            <li>Busca la sección "Subir Documento"</li>
+                                            <li>Selecciona el tipo de documento (propuesta, capítulo, etc.)</li>
+                                            <li>Arrastra tu archivo o haz clic para seleccionarlo</li>
+                                            <li>Agrega una descripción opcional</li>
+                                            <li>Los formatos recomendados son PDF, DOC, DOCX</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                            data-bs-target="#student3">
+                                        Seguir el estado de tu tesis
+                                    </button>
+                                </h2>
+                                <div id="student3" class="accordion-collapse collapse" 
+                                     data-bs-parent="#studentAccordion">
+                                    <div class="accordion-body">
+                                        <p>Los estados de tu tesis son:</p>
+                                        <ul>
+                                            <li><span class="badge bg-secondary">Borrador</span> - Puedes editar libremente</li>
+                                            <li><span class="badge bg-info">Presentada</span> - En espera de revisión</li>
+                                            <li><span class="badge bg-warning">En Revisión</span> - Siendo evaluada</li>
+                                            <li><span class="badge bg-warning">Requiere Revisión</span> - Necesita cambios</li>
+                                            <li><span class="badge bg-success">Aprobada</span> - Lista para sustentación</li>
+                                            <li><span class="badge bg-primary">Completada</span> - Proceso finalizado</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Guía para Docentes -->
+            <section id="teacher-guide" class="mb-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-chalkboard-teacher text-success me-2"></i>
+                            Guía para Docentes
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Revisar tesis asignadas</h6>
+                                <p class="small">
+                                    En tu dashboard verás las tesis donde eres asesor o jurado. 
+                                    Haz clic en cualquier tesis para ver sus detalles.
+                                </p>
+                                
+                                <h6>Agregar comentarios</h6>
+                                <p class="small">
+                                    Puedes agregar comentarios generales, sugerencias o correcciones. 
+                                    Marca si el comentario es privado o público.
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Aprobar o rechazar</h6>
+                                <p class="small">
+                                    Usa los botones de acción para aprobar, rechazar o solicitar 
+                                    revisiones adicionales en las tesis.
+                                </p>
+                                
+                                <h6>Calificar tesis</h6>
+                                <p class="small">
+                                    Al aprobar una tesis, puedes asignar una calificación numérica 
+                                    que quedará registrada en el sistema.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Preguntas Frecuentes -->
+            <section id="faq" class="mb-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-question-circle text-warning me-2"></i>
+                            Preguntas Frecuentes
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="accordion" id="faqAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                            data-bs-target="#faq1">
+                                        ¿Qué tipos de archivos puedo subir?
+                                    </button>
+                                </h2>
+                                <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Puedes subir archivos en los siguientes formatos: PDF, DOC, DOCX, TXT, 
+                                        PNG, JPG, JPEG. Se recomienda usar PDF para documentos finales.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                            data-bs-target="#faq2">
+                                        ¿Cuál es el tamaño máximo de archivo?
+                                    </button>
+                                </h2>
+                                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        El tamaño máximo por archivo es de 16 MB. Si tu archivo es más grande, 
+                                        considera comprimirlo o dividirlo en partes más pequeñas.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                            data-bs-target="#faq3">
+                                        ¿Puedo editar mi tesis después de presentarla?
+                                    </button>
+                                </h2>
+                                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Una vez presentada para revisión, no puedes editar la información básica. 
+                                        Sin embargo, si el asesor solicita revisiones, el estado cambiará y 
+                                        podrás hacer las modificaciones necesarias.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                            data-bs-target="#faq4">
+                                        ¿Cómo recibo notificaciones?
+                                    </button>
+                                </h2>
+                                <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Las notificaciones aparecen en tiempo real en el icono de campana en la 
+                                        barra superior. También puedes ver todas tus notificaciones en la sección 
+                                        correspondiente de tu dashboard.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Soporte -->
+            <section id="support" class="mb-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-life-ring text-danger me-2"></i>
+                            Soporte Técnico
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <p>Si necesitas ayuda adicional o encuentras algún problema, puedes contactarnos:</p>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-envelope text-primary me-3"></i>
+                                    <div>
+                                        <strong>Email de soporte:</strong><br>
+                                        <a href="mailto:soporte.tesis@unjfsc.edu.pe">soporte.tesis@unjfsc.edu.pe</a>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-phone text-success me-3"></i>
+                                    <div>
+                                        <strong>Teléfono:</strong><br>
+                                        <a href="tel:+51123456789">(01) 234-5678</a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-clock text-warning me-3"></i>
+                                    <div>
+                                        <strong>Horario de atención:</strong><br>
+                                        Lunes a Viernes: 8:00 AM - 6:00 PM<br>
+                                        Sábados: 9:00 AM - 1:00 PM
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-map-marker-alt text-info me-3"></i>
+                                    <div>
+                                        <strong>Ubicación:</strong><br>
+                                        Centro de Sistemas - UNJFSC<br>
+                                        Av. Mercedes Indacochea 609, Huacho
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info mt-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Tip:</strong> Antes de contactar soporte, revisa esta guía de ayuda 
+                            ya que la mayoría de preguntas están respondidas aquí.
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Scroll suave para navegación interna
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+
+// Highlight de sección activa en navegación
+window.addEventListener('scroll', function() {
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.list-group-item[href^="#"]');
+    
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (pageYOffset >= sectionTop - 200) {
+            current = '#' + section.getAttribute('id');
+        }
+    });
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === current) {
+            link.classList.add('active');
+        }
+    });
+});
+</script>
+{% endblock %}

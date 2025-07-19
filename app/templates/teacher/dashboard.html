@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Docente - Sistema de Tesis UNJFSC{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2">
+                    <i class="fas fa-chalkboard-teacher text-primary me-2"></i>
+                    Dashboard Docente
+                </h1>
+                <div class="text-muted">
+                    <i class="fas fa-calendar-alt me-1"></i>
+                    Hoy, {{ current_date.strftime('%d de %B de %Y') }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarjetas de estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="card-title mb-0">{{ thesis_as_advisor|length }}</h3>
+                            <p class="card-text">Como Asesor</p>
+                        </div>
+                        <div class="card-icon">
+                            <i class="fas fa-user-tie fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="card-title mb-0">{{ thesis_as_jury|length }}</h3>
+                            <p class="card-text">Como Jurado</p>
+                        </div>
+                        <div class="card-icon">
+                            <i class="fas fa-gavel fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="card-title mb-0">{{ pending_reviews }}</h3>
+                            <p class="card-text">Pendientes</p>
+                        </div>
+                        <div class="card-icon">
+                            <i class="fas fa-clock fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="card-title mb-0">{{ notifications|length }}</h3>
+                            <p class="card-text">Notificaciones</p>
+                        </div>
+                        <div class="card-icon">
+                            <i class="fas fa-bell fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Tesis como Asesor -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user-tie me-2"></i>
+                        Tesis como Asesor
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if thesis_as_advisor %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Título</th>
+                                        <th>Estudiante</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for thesis in thesis_as_advisor %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ thesis.title[:50] }}{% if thesis.title|length > 50 %}...{% endif %}</strong>
+                                        </td>
+                                        <td>{{ thesis.student.full_name }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ thesis.get_status_color() }}">
+                                                {{ thesis.get_status_display() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('teacher.thesis_detail', thesis_id=thesis.id) }}" 
+                                               class="btn btn-sm btn-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>No tiene tesis asignadas como asesor</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Tesis como Jurado -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-gavel me-2"></i>
+                        Tesis como Jurado
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if thesis_as_jury %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Título</th>
+                                        <th>Estudiante</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for thesis in thesis_as_jury %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ thesis.title[:50] }}{% if thesis.title|length > 50 %}...{% endif %}</strong>
+                                        </td>
+                                        <td>{{ thesis.student.full_name }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ thesis.get_status_color() }}">
+                                                {{ thesis.get_status_display() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('teacher.thesis_detail', thesis_id=thesis.id) }}" 
+                                               class="btn btn-sm btn-success">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>No tiene tesis asignadas como jurado</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificaciones Recientes -->
+    {% if notifications %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bell me-2"></i>
+                        Notificaciones Recientes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for notification in notifications[:5] %}
+                        <div class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">{{ notification.title }}</div>
+                                <p class="mb-1">{{ notification.message }}</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-clock me-1"></i>
+                                    {{ notification.created_at | from_now }}
+                                </small>
+                            </div>
+                            {% if not notification.is_read %}
+                            <span class="badge bg-primary rounded-pill">Nuevo</span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if notifications|length > 5 %}
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('teacher.notifications') }}" class="btn btn-outline-info">
+                            Ver todas las notificaciones
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-refresh cada 30 segundos para notificaciones
+    setInterval(function() {
+        // Aquí podrías agregar lógica para actualizar notificaciones via AJAX
+    }, 30000);
+});
+</script>
+{% endblock %}

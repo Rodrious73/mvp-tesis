@@ -1,0 +1,478 @@
+{% extends "base.html" %}
+
+{% block title %}{{ thesis.title }} - Administración{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Navegación -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{{ url_for('admin.thesis_list') }}">Tesis</a>
+                    </li>
+                    <li class="breadcrumb-item active">{{ thesis.title[:30] }}{% if thesis.title|length > 30 %}...{% endif %}</li>
+                </ol>
+            </nav>
+            
+            <!-- Información de la tesis -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-book me-2"></i>
+                                Información de la Tesis
+                            </h5>
+                        </div>
+                        
+                        <div class="card-body">
+                            <h4 class="mb-3">{{ thesis.title }}</h4>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>Estado:</strong>
+                                    <span class="badge bg-{{ thesis.get_status_color() }} ms-2">
+                                        {{ thesis.get_status_display() }}
+                                    </span>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Carrera:</strong> {{ thesis.career }}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>Estudiante:</strong>
+                                    <div class="mt-1">
+                                        <i class="fas fa-user-graduate me-2"></i>
+                                        {{ thesis.student.full_name }}
+                                        {% if thesis.student.student_code %}
+                                            <br><small class="text-muted">Código: {{ thesis.student.student_code }}</small>
+                                        {% endif %}
+                                        <br><small class="text-muted">{{ thesis.student.email }}</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Fechas:</strong>
+                                    <div class="mt-1">
+                                        <small class="d-block">Creado: {{ thesis.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                                        {% if thesis.submitted_at %}
+                                            <small class="d-block">Presentado: {{ thesis.submitted_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                                        {% endif %}
+                                        {% if thesis.defense_date %}
+                                            <small class="d-block">Sustentación: {{ thesis.defense_date.strftime('%d/%m/%Y %H:%M') }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if thesis.research_line %}
+                            <div class="mb-3">
+                                <strong>Línea de Investigación:</strong>
+                                <p class="mb-0">{{ thesis.research_line }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            {% if thesis.keywords %}
+                            <div class="mb-3">
+                                <strong>Palabras Clave:</strong>
+                                <div class="mt-1">
+                                    {% for keyword in thesis.keywords.split(',') %}
+                                        <span class="badge bg-secondary me-1">{{ keyword.strip() }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if thesis.description %}
+                            <div class="mb-3">
+                                <strong>Descripción:</strong>
+                                <p class="mt-2">{{ thesis.description }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            {% if thesis.grade %}
+                            <div class="mb-3">
+                                <strong>Calificación:</strong>
+                                <span class="badge bg-primary ms-2">{{ thesis.grade }}</span>
+                                {% if thesis.grade_letter %}
+                                    <span class="badge bg-info ms-1">{{ thesis.grade_letter }}</span>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Documentos -->
+                    {% if documents %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-files me-2"></i>
+                                Documentos ({{ documents|length }})
+                            </h5>
+                        </div>
+                        
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Tipo</th>
+                                            <th>Tamaño</th>
+                                            <th>Subido por</th>
+                                            <th>Fecha</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for doc in documents %}
+                                        <tr>
+                                            <td>
+                                                <i class="fas fa-file-pdf me-2 text-danger"></i>
+                                                {{ doc.original_filename }}
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">{{ doc.get_type_display() }}</span>
+                                            </td>
+                                            <td>{{ doc.get_file_size_display() }}</td>
+                                            <td>{{ doc.uploader.get_full_name() }}</td>
+                                            <td>{{ doc.created_at.strftime('%d/%m/%Y') }}</td>
+                                            <td>
+                                                <a href="{{ url_for('admin.download_document', document_id=doc.id) }}" 
+                                                   class="btn btn-sm btn-outline-primary" title="Descargar">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Comentarios -->
+                    {% if comments %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-comments me-2"></i>
+                                Comentarios y Observaciones ({{ comments|length }})
+                            </h5>
+                        </div>
+                        
+                        <div class="card-body">
+                            {% for comment in comments %}
+                            <div class="border-bottom pb-3 mb-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>{{ comment.author.full_name }}</strong>
+                                        <small class="text-muted">({{ comment.author.get_role_display() }})</small>
+                                    </div>
+                                    <small class="text-muted">{{ comment.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                                </div>
+                                <p class="mt-2 mb-0">{{ comment.content }}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Panel lateral -->
+                <div class="col-lg-4">
+                    <!-- Asignaciones -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-users me-2"></i>
+                                Asignaciones
+                            </h5>
+                        </div>
+                        
+                        <div class="card-body">
+                            <!-- Asesor -->
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-chalkboard-teacher me-1"></i>
+                                    Asesor:
+                                </label>
+                                
+                                {% if thesis.advisor %}
+                                    <div class="card bg-light">
+                                        <div class="card-body p-3">
+                                            <h6 class="card-title mb-1">{{ thesis.advisor.full_name }}</h6>
+                                            {% if thesis.advisor.department %}
+                                                <small class="text-muted">{{ thesis.advisor.department }}</small>
+                                            {% endif %}
+                                            {% if thesis.advisor.specialization %}
+                                                <br><small class="text-muted">{{ thesis.advisor.specialization }}</small>
+                                            {% endif %}
+                                            
+                                            <div class="mt-2">
+                                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                        onclick="removeAssignment({{ thesis.id }}, 'advisor')">
+                                                    <i class="fas fa-times me-1"></i>
+                                                    Remover
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-3">
+                                        <i class="fas fa-user-plus fa-2x text-muted mb-2"></i>
+                                        <p class="text-muted mb-2">Sin asesor asignado</p>
+                                        <button type="button" class="btn btn-sm btn-success" 
+                                                onclick="showAssignModal({{ thesis.id }}, 'advisor', '{{ thesis.title }}')">
+                                            <i class="fas fa-plus me-1"></i>
+                                            Asignar Asesor
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Jurado -->
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-gavel me-1"></i>
+                                    Jurado:
+                                </label>
+                                
+                                {% if thesis.jury %}
+                                    <div class="card bg-light">
+                                        <div class="card-body p-3">
+                                            <h6 class="card-title mb-1">{{ thesis.jury.full_name }}</h6>
+                                            {% if thesis.jury.department %}
+                                                <small class="text-muted">{{ thesis.jury.department }}</small>
+                                            {% endif %}
+                                            {% if thesis.jury.specialization %}
+                                                <br><small class="text-muted">{{ thesis.jury.specialization }}</small>
+                                            {% endif %}
+                                            
+                                            <div class="mt-2">
+                                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                        onclick="removeAssignment({{ thesis.id }}, 'jury')">
+                                                    <i class="fas fa-times me-1"></i>
+                                                    Remover
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-3">
+                                        <i class="fas fa-user-plus fa-2x text-muted mb-2"></i>
+                                        <p class="text-muted mb-2">Sin jurado asignado</p>
+                                        <button type="button" class="btn btn-sm btn-info" 
+                                                onclick="showAssignModal({{ thesis.id }}, 'jury', '{{ thesis.title }}')">
+                                            <i class="fas fa-plus me-1"></i>
+                                            Asignar Jurado
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Acciones -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-cogs me-2"></i>
+                                Acciones
+                            </h5>
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                {% if thesis.status == 'submitted' %}
+                                    <button type="button" class="btn btn-success" 
+                                            onclick="changeStatus({{ thesis.id }}, 'under_review')">
+                                        <i class="fas fa-search me-2"></i>
+                                        Poner en Revisión
+                                    </button>
+                                {% endif %}
+                                
+                                {% if thesis.status in ['under_review', 'submitted'] %}
+                                    <button type="button" class="btn btn-primary" 
+                                            onclick="changeStatus({{ thesis.id }}, 'approved')">
+                                        <i class="fas fa-check me-2"></i>
+                                        Aprobar
+                                    </button>
+                                    
+                                    <button type="button" class="btn btn-warning" 
+                                            onclick="changeStatus({{ thesis.id }}, 'revision_required')">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        Requiere Revisión
+                                    </button>
+                                    
+                                    <button type="button" class="btn btn-danger" 
+                                            onclick="changeStatus({{ thesis.id }}, 'rejected')">
+                                        <i class="fas fa-times me-2"></i>
+                                        Rechazar
+                                    </button>
+                                {% endif %}
+                                
+                                <hr>
+                                
+                                <a href="mailto:{{ thesis.student.email }}" class="btn btn-outline-primary">
+                                    <i class="fas fa-envelope me-2"></i>
+                                    Contactar Estudiante
+                                </a>
+                                
+                                {% if thesis.advisor %}
+                                    <a href="mailto:{{ thesis.advisor.email }}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-envelope me-2"></i>
+                                        Contactar Asesor
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para asignar asesor/jurado (reutilizar del anterior) -->
+<div class="modal fade" id="assignModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignModalTitle">Asignar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            
+            <form id="assignForm" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="teacherSelect" class="form-label" id="teacherSelectLabel">Seleccionar:</label>
+                        <select class="form-select" id="teacherSelect" name="teacher_id" required>
+                            <option value="">Cargando...</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Asignar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let assignModal;
+
+document.addEventListener('DOMContentLoaded', function() {
+    assignModal = new bootstrap.Modal(document.getElementById('assignModal'));
+});
+
+function showAssignModal(thesisId, type, thesisTitle) {
+    const title = type === 'advisor' ? 'Asignar Asesor' : 'Asignar Jurado';
+    const label = type === 'advisor' ? 'Asesor:' : 'Jurado:';
+    
+    document.getElementById('assignModalTitle').textContent = title;
+    document.getElementById('teacherSelectLabel').textContent = label;
+    
+    const form = document.getElementById('assignForm');
+    form.action = `/admin/thesis/${thesisId}/assign-${type}`;
+    form.querySelector('select[name="teacher_id"]').name = `${type}_id`;
+    
+    loadTeachers();
+    assignModal.show();
+}
+
+function loadTeachers() {
+    const select = document.getElementById('teacherSelect');
+    select.innerHTML = '<option value="">Cargando...</option>';
+    
+    fetch('/admin/api/teachers')
+        .then(response => response.json())
+        .then(teachers => {
+            select.innerHTML = '<option value="">Selecciona un docente</option>';
+            
+            teachers.forEach(teacher => {
+                const option = document.createElement('option');
+                option.value = teacher.id;
+                option.textContent = `${teacher.name}`;
+                if (teacher.department) {
+                    option.textContent += ` - ${teacher.department}`;
+                }
+                select.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error cargando docentes:', error);
+            select.innerHTML = '<option value="">Error cargando docentes</option>';
+        });
+}
+
+function removeAssignment(thesisId, type) {
+    if (confirm(`¿Estás seguro de que quieres remover el ${type === 'advisor' ? 'asesor' : 'jurado'}?`)) {
+        fetch(`/admin/thesis/${thesisId}/remove-${type}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error al remover la asignación');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al remover la asignación');
+        });
+    }
+}
+
+function changeStatus(thesisId, newStatus) {
+    const statusNames = {
+        'under_review': 'en revisión',
+        'approved': 'aprobada',
+        'revision_required': 'requiere revisión',
+        'rejected': 'rechazada'
+    };
+    
+    if (confirm(`¿Estás seguro de cambiar el estado a "${statusNames[newStatus]}"?`)) {
+        fetch(`/admin/thesis/${thesisId}/change-status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                status: newStatus
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error al cambiar el estado');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al cambiar el estado');
+        });
+    }
+}
+</script>
+{% endblock %}
